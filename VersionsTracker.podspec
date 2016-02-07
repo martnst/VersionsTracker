@@ -9,22 +9,17 @@
 Pod::Spec.new do |s|
   s.name             = "VersionsTracker"
   s.version          = "0.1.0"
-  s.summary          = "A short description of VersionsTracker."
-
-# This description is used to generate tags and improve search results.
-#   * Think: What does it do? Why did you write it? What is the focus?
-#   * Try to keep it short, snappy and to the point.
-#   * Write the description between the DESC delimiters below.
-#   * Finally, don't worry about the indent, CocoaPods strips it!  
+  s.summary          = "Keeping track of version installation history made easy."
   s.description      = <<-DESC
+                       VersionsTracker is a Swift Library, which tracks install version history of app and os version.
+                       It includes not just the marketing version, but also build number and install date.
                        DESC
 
-  s.homepage         = "https://github.com/<GITHUB_USERNAME>/VersionsTracker"
-  # s.screenshots     = "www.example.com/screenshots_1", "www.example.com/screenshots_2"
+  s.homepage         = "https://github.com/maremmle/VersionsTracker"
   s.license          = 'MIT'
   s.author           = { "Martin Stemmle" => "marste@msmix.de" }
-  s.source           = { :git => "https://github.com/<GITHUB_USERNAME>/VersionsTracker.git", :tag => s.version.to_s }
-  # s.social_media_url = 'https://twitter.com/<TWITTER_USERNAME>'
+  s.source           = { :git => "https://github.com/maremmle/VersionsTracker.git", :tag => s.version.to_s }
+  s.social_media_url = 'https://twitter.com/maremmle'
 
   s.platform     = :ios, '8.0'
   s.requires_arc = true
@@ -34,7 +29,5 @@ Pod::Spec.new do |s|
     'VersionsTracker' => ['Pod/Assets/*.png']
   }
 
-  # s.public_header_files = 'Pod/Classes/**/*.h'
-  # s.frameworks = 'UIKit', 'MapKit'
-  # s.dependency 'AFNetworking', '~> 2.3'
+
 end
