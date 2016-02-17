@@ -15,11 +15,11 @@ Pod::Spec.new do |s|
                        It includes not just the marketing version, but also build number and install date.
                        DESC
 
-  s.homepage         = "https://github.com/maremmle/VersionsTracker"
+  s.homepage         = "https://github.com/martnst/VersionsTracker"
   s.license          = 'MIT'
-  s.author           = { "Martin Stemmle" => "marste@msmix.de" }
-  s.source           = { :git => "https://github.com/maremmle/VersionsTracker.git", :tag => s.version.to_s }
-  s.social_media_url = 'https://twitter.com/maremmle'
+  s.author           = { "Martin Stemmle" => "hi@martn.st" }
+  s.source           = { :git => "https://github.com/martnst/VersionsTracker.git", :tag => s.version.to_s }
+  s.social_media_url = 'https://twitter.com/martn_st'
 
   s.platform     = :ios, '8.0'
   s.requires_arc = true

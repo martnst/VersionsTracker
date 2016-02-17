@@ -131,7 +131,7 @@ Versions with the same marketing version but different build are not equal.
 
 ## Author
 
-Martin Stemmle, marste@msmix.de
+Martin Stemmle, hi@martn.st
 
 ## License
 
