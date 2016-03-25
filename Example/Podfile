@@ -8,6 +8,6 @@ end
 target 'VersionsTracker_Tests', :exclusive => true do
   pod 'VersionsTracker', :path => '../'
 
-  pod 'Quick', '~> 0.8.0'
-  pod 'Nimble', '3.0.0'
+  pod 'Quick', '~> 0.8'
+  pod 'Nimble', '~> 3.0'
 end

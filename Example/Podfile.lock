@@ -1,11 +1,11 @@
 PODS:
-  - Nimble (3.0.0)
-  - Quick (0.8.0)
+  - Nimble (3.2.0)
+  - Quick (0.9.1)
   - VersionsTracker (0.1.0)
 
 DEPENDENCIES:
-  - Nimble (= 3.0.0)
-  - Quick (~> 0.8.0)
+  - Nimble (~> 3.0)
+  - Quick (~> 0.8)
   - VersionsTracker (from `../`)
 
 EXTERNAL SOURCES:
@@ -13,8 +13,8 @@ EXTERNAL SOURCES:
     :path: "../"
 
 SPEC CHECKSUMS:
-  Nimble: 4c353d43735b38b545cbb4cb91504588eb5de926
-  Quick: 563d0f6ec5f72e394645adb377708639b7dd38ab
-  VersionsTracker: 43a34b9b112bb711095e4816a7b9ce902ece1b17
+  Nimble: 703854335d181df169bbca9c97117b5cf8c47c1d
+  Quick: a5221fc21788b6aeda934805e68b061839bc3165
+  VersionsTracker: ecce97ca082fe3eb02d86419d6edf8fb0fecef35
 
 COCOAPODS: 0.39.0
