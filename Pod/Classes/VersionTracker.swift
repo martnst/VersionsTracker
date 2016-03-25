@@ -114,21 +114,23 @@ public class VersionTracker {
     
     /**
      Updates the version history once per session. To do so it loads the version history and creates a new version. This objects will be returned in a tuple.
-     However, if it was already called befor it will return `nil` as the versino history gets updates only once per app session.
+     However, if it was already called befor it will return `nil` as the version history gets updates only once per app session.
      */
-    internal static func updateVersionHistoryOnce(var withVersion currentVersion: Version, inScope userDefaultsScope: String, onUserDefaults userDefaults: NSUserDefaults) -> (installedVersions: [Version], previousVersion: Version?, currentVerstion: Version)?   {
+    internal static func updateVersionHistoryOnce(withVersion newVersion: Version, inScope userDefaultsScope: String, onUserDefaults userDefaults: NSUserDefaults) -> (installedVersions: [Version], previousVersion: Version?, currentVerstion: Version)?   {
         
         var result : (installedVersions: [Version], previousVersion: Version?, currentVerstion: Version)?
         
         let updateBlock:(Void)->Void = { () -> Void in
             var installedVersions = userDefaults.versionsInScope(userDefaultsScope)
             
-            if let knownCurrentVersion = installedVersions.filter({$0 == currentVersion}).first {
+            let currentVersion : Version
+            if let knownCurrentVersion = installedVersions.filter({$0 == newVersion}).first {
                 currentVersion = knownCurrentVersion
             } else {
-                currentVersion.installDate = NSDate()
-                installedVersions.append(currentVersion)
+                newVersion.installDate = NSDate()
+                installedVersions.append(newVersion)
                 userDefaults.setVersions(installedVersions, inScope: userDefaultsScope)
+                currentVersion = newVersion
             }
             
             userDefaults.setLastLaunchedVersion(currentVersion, inScope: userDefaultsScope)
@@ -203,9 +205,9 @@ private extension NSUserDefaults {
         return self.versionForKey(key, property: NSUserDefaults.lastLaunchedVersionKey)
     }
     
-    private func versionForKey(var key: String, property: String) -> Version? {
-        key = buildKeyForProperty(property, inScope: key)
-        return Version.versionFromDictionary(self.dictionaryForKey(key))
+    private func versionForKey(key: String, property: String) -> Version? {
+        let versionDict = self.dictionaryForKey(buildKeyForProperty(property, inScope: key))
+        return Version.versionFromDictionary(versionDict)
     }
     
     private func buildKeyForProperty(property: String, inScope scope: String) -> String {
