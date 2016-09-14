@@ -23,14 +23,14 @@
 
 import Foundation
 
-private func parseVersion(lhs: Version, rhs: Version) -> Zip2Sequence<[Int], [Int]> {
+private func parseVersion(_ lhs: Version, rhs: Version) -> Zip2Sequence<[Int], [Int]> {
     
-    let lhs = lhs.versionString.characters.split(".").map { (String($0) as NSString).integerValue }
-    let rhs = rhs.versionString.characters.split(".").map { (String($0) as NSString).integerValue }
+    let lhs = lhs.versionString.characters.split(separator: ".").map { (String($0) as NSString).integerValue }
+    let rhs = rhs.versionString.characters.split(separator: ".").map { (String($0) as NSString).integerValue }
     let count = max(lhs.count, rhs.count)
     return zip(
-        lhs + Array(count: count - lhs.count, repeatedValue: 0),
-        rhs + Array(count: count - rhs.count, repeatedValue: 0))
+        lhs + Array(repeating: 0, count: count - lhs.count),
+        rhs + Array(repeating: 0, count: count - rhs.count))
 }
 
 public func == (lhs: Version, rhs: Version) -> Bool {
@@ -62,34 +62,34 @@ public func < (lhs: Version, rhs: Version) -> Bool {
     return false
 }
 
-public class Version: StringLiteralConvertible, Comparable {
+open class Version: ExpressibleByStringLiteral, Comparable {
     
     internal class var currentAppVersion: Version {
-        guard let infoDict = NSBundle.mainBundle().infoDictionary else {
+        guard let infoDict = Bundle.main.infoDictionary else {
             fatalError()
         }
         return Version(infoDict["CFBundleShortVersionString"] as! String, buildString: infoDict[kCFBundleVersionKey as String] as? String, installDate: nil)
     }
     
     internal class var currentOSVersion : Version {
-        let systemVersion = NSProcessInfo.processInfo().operatingSystemVersion
-        let systemVersionString = [systemVersion.majorVersion, systemVersion.minorVersion, systemVersion.patchVersion].map({String($0)}).joinWithSeparator(".")
-        let systemVersionStringScanner = NSScanner(string: NSProcessInfo.processInfo().operatingSystemVersionString)
+        let systemVersion = ProcessInfo.processInfo.operatingSystemVersion
+        let systemVersionString = [systemVersion.majorVersion, systemVersion.minorVersion, systemVersion.patchVersion].map({String($0)}).joined(separator: ".")
+        let systemVersionStringScanner = Scanner(string: ProcessInfo.processInfo.operatingSystemVersionString)
         var build: NSString?
-        systemVersionStringScanner.scanUpToString("(Build", intoString: nil)
-        systemVersionStringScanner.scanUpToString(" ", intoString: nil)
-        systemVersionStringScanner.scanUpToString(")", intoString: &build)
+        systemVersionStringScanner.scanUpTo("(Build", into: nil)
+        systemVersionStringScanner.scanUpTo(" ", into: nil)
+        systemVersionStringScanner.scanUpTo(")", into: &build)
         return Version(systemVersionString, buildString: build as? String)
     }
     
     public let versionString: String
     public let buildString: String
-    internal(set) public var installDate: NSDate
+    internal(set) public var installDate: Date
     
-    public init(_ versionString: String, buildString build: String? = nil, installDate date: NSDate? = nil) {
+    public init(_ versionString: String, buildString build: String? = nil, installDate date: Date? = nil) {
         self.versionString = versionString
         self.buildString = build ?? ""
-        self.installDate = date ?? NSDate()
+        self.installDate = date ?? Date()
     }
     
     // MARK: NSUserDefaults serialization
@@ -101,10 +101,10 @@ public class Version: StringLiteralConvertible, Comparable {
     internal convenience init(dict: NSDictionary) {
         self.init(dict[Version.versionStringKey] as! String,
             buildString: dict[Version.buildStringKey] as? String,
-            installDate: dict[Version.installDateKey] as? NSDate)
+            installDate: dict[Version.installDateKey] as? Date)
     }
     
-    internal static func versionFromDictionary(dict: NSDictionary?) -> Version? {
+    internal static func versionFromDictionary(_ dict: NSDictionary?) -> Version? {
         if let dictionary = dict {
             return Version(dict: dictionary)
         }
@@ -127,19 +127,19 @@ public class Version: StringLiteralConvertible, Comparable {
     public required init(stringLiteral value: String) {
         self.versionString = value
         self.buildString = ""
-        self.installDate = NSDate()
+        self.installDate = Date()
     }
     
     public required init(unicodeScalarLiteral value: String) {
         self.versionString = value
         self.buildString = ""
-        self.installDate = NSDate()
+        self.installDate = Date()
     }
     
     public required init(extendedGraphemeClusterLiteral value: String) {
         self.versionString = value
         self.buildString = ""
-        self.installDate = NSDate()
+        self.installDate = Date()
     }
 }
 
@@ -160,31 +160,31 @@ extension Version {
      - Downgraded: markting version decreased
      */
     public enum ChangeState {
-        case Installed
-        case NotChanged
-        case Update(previousVersion: Version)
-        case Upgraded(previousVersion: Version)
-        case Downgraded(previousVersion: Version)
+        case installed
+        case notChanged
+        case update(previousVersion: Version)
+        case upgraded(previousVersion: Version)
+        case downgraded(previousVersion: Version)
     }
     
     /**
      Determines the change state from one version to another.
      */
-    internal static func changeStateForFromVersion(olderVersion: Version?, toVersion newerVersion: Version) -> ChangeState {
+    internal static func changeStateForFromVersion(_ olderVersion: Version?, toVersion newerVersion: Version) -> ChangeState {
         guard let olderVersion = olderVersion else {
-            return .Installed
+            return .installed
         }
         
         if olderVersion < newerVersion {
-            return .Upgraded(previousVersion: olderVersion)
+            return .upgraded(previousVersion: olderVersion)
         }
         else if olderVersion > newerVersion {
-            return .Downgraded(previousVersion: olderVersion)
+            return .downgraded(previousVersion: olderVersion)
         }
         else if olderVersion != newerVersion {
-            return .Update(previousVersion: olderVersion)
+            return .update(previousVersion: olderVersion)
         }
-        return .NotChanged
+        return .notChanged
     }
     
 }
@@ -195,15 +195,15 @@ extension Version.ChangeState: Equatable {
 
 public func ==(lhs: Version.ChangeState, rhs: Version.ChangeState) -> Bool {
     switch (lhs, rhs) {
-    case (.Installed, .Installed):
+    case (.installed, .installed):
         return true
-    case (.NotChanged, .NotChanged):
+    case (.notChanged, .notChanged):
         return true
-    case (let .Update(previousVersionLHS), let .Update(previousVersionRHS)):
+    case (let .update(previousVersionLHS), let .update(previousVersionRHS)):
         return previousVersionLHS == previousVersionRHS
-    case (let .Upgraded(previousVersionLHS), let .Upgraded(previousVersionRHS)):
+    case (let .upgraded(previousVersionLHS), let .upgraded(previousVersionRHS)):
         return previousVersionLHS == previousVersionRHS
-    case (let .Downgraded(previousVersionLHS), let .Downgraded(previousVersionRHS)):
+    case (let .downgraded(previousVersionLHS), let .downgraded(previousVersionRHS)):
         return previousVersionLHS == previousVersionRHS
     default:
         return false

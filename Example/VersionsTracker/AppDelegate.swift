@@ -33,7 +33,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
 
 
-    func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
         
         guard NSClassFromString("XCTest") == nil else {
@@ -59,25 +59,25 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return true
     }
 
-    func applicationWillResignActive(application: UIApplication) {
+    func applicationWillResignActive(_ application: UIApplication) {
         // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
         // Use this method to pause ongoing tasks, disable timers, and throttle down OpenGL ES frame rates. Games should use this method to pause the game.
     }
 
-    func applicationDidEnterBackground(application: UIApplication) {
+    func applicationDidEnterBackground(_ application: UIApplication) {
         // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
         // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
     }
 
-    func applicationWillEnterForeground(application: UIApplication) {
+    func applicationWillEnterForeground(_ application: UIApplication) {
         // Called as part of the transition from the background to the inactive state; here you can undo many of the changes made on entering the background.
     }
 
-    func applicationDidBecomeActive(application: UIApplication) {
+    func applicationDidBecomeActive(_ application: UIApplication) {
         // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
     }
 
-    func applicationWillTerminate(application: UIApplication) {
+    func applicationWillTerminate(_ application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     }
 
@@ -85,38 +85,38 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 // MARK: - Helpers 
 
-func printVersionInfo(versionTracker: VersionTracker, headline: String) {
+func printVersionInfo(_ versionTracker: VersionTracker, headline: String) {
     print("")
     print("")
     print(headline)
-    print([String](count: headline.characters.count, repeatedValue: "-").joinWithSeparator(""))
+    print([String](repeating: "-", count: headline.characters.count).joined(separator: ""))
     print("")
     printVersionChange(versionTracker)
     print("⌚️Current version is from \(versionTracker.currentVersion.installDate)")
-    print("  previous version is from \((versionTracker.previousVersion?.installDate ?? "- oh, there is no")!)")
+    print("  previous version is from \((versionTracker.previousVersion?.installDate.description ?? "- oh, there is no")!)")
     printVersionHistory(versionTracker)
 }
 
-func printVersionChange(versionTracker: VersionTracker) {
+func printVersionChange(_ versionTracker: VersionTracker) {
     switch versionTracker.changeState {
-    case .Installed:
+    case .installed:
         print("🆕 Congratulations, the app is launched for the very first time")
-    case .NotChanged:
+    case .notChanged:
         print("🔄 Welcome back, nothing as changed since the last time")
-    case .Update(let previousVersion):
+    case .update(let previousVersion):
         print("🆙 The app was updated making small changes: \(previousVersion) -> \(versionTracker.currentVersion)")
-    case .Upgraded(let previousVersion):
+    case .upgraded(let previousVersion):
         print("⬆️ Cool, its a new version: \(previousVersion) -> \(versionTracker.currentVersion)")
-    case .Downgraded(let previousVersion):
+    case .downgraded(let previousVersion):
         print("⬇️ Oohu, looks like something is wrong with the current version to make you come back here: \(previousVersion) -> \(versionTracker.currentVersion)")
     }
 }
 
-func printVersionHistory(versionTracker: VersionTracker) {
+func printVersionHistory(_ versionTracker: VersionTracker) {
     let clocks = ["🕐", "🕑", "🕒", "🕓", "🕔", "🕕", "🕖", "🕗", "🕘", "🕙", "🕚", "🕛"]
     print("")
     print("Version history:")
-    for (index, version) in versionTracker.versionHistory.enumerate() {
+    for (index, version) in versionTracker.versionHistory.enumerated() {
         print("\(clocks[index % clocks.count]) \(version.installDate) \(version)")
     }
 }

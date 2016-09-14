@@ -33,7 +33,7 @@ class VersionTests: QuickSpec {
         describe("Version") {
             
             describe("currentVersion") {
-                let infoDict = NSBundle.mainBundle().infoDictionary!
+                let infoDict = Bundle.main.infoDictionary!
                 it("versionString is set to CFBundleShortVersionString from info.plist") {
                     expect(Version.currentAppVersion.versionString).to(equal(infoDict["CFBundleShortVersionString"] as? String))
                 }
@@ -104,9 +104,9 @@ class VersionTests: QuickSpec {
                     }
                     
                     it("does not care about installDate when semantic versions and builds are equal") {
-                        let version = Version("2.0.0", buildString: "B0815", installDate: NSDate())
-                        let laterDate = NSDate(timeIntervalSinceNow: 30)
-                        let earlierDate = NSDate(timeIntervalSinceNow: -30)
+                        let version = Version("2.0.0", buildString: "B0815", installDate: Date())
+                        let laterDate = Date(timeIntervalSinceNow: 30)
+                        let earlierDate = Date(timeIntervalSinceNow: -30)
                         expect(version).to(equal(Version("2.0", buildString: "B0815", installDate: earlierDate)))
                         expect(version).to(equal(Version("2.0.0", buildString: "B0815", installDate: earlierDate)))
                         expect(version).to(equal(Version("2.0.0.0", buildString: "B0815", installDate: earlierDate)))
@@ -189,27 +189,27 @@ class VersionTests: QuickSpec {
             
             describe("can determine version changes") {
                 it("detects clean installs") {
-                    expect(Version.changeStateForFromVersion(nil, toVersion: Version("1.0", buildString: "19", installDate: NSDate()))).to(equal(Version.ChangeState.Installed))
+                    expect(Version.changeStateForFromVersion(nil, toVersion: Version("1.0", buildString: "19", installDate: Date()))).to(equal(Version.ChangeState.installed))
                 }
                 it("detects same version as not changed") {
-                    let prevVersion = Version("1.0", buildString: "19", installDate: NSDate())
-                    let curVersion = Version("1.0", buildString: "19", installDate: NSDate())
-                    expect(Version.changeStateForFromVersion(prevVersion, toVersion: curVersion)).to(equal(Version.ChangeState.NotChanged))
+                    let prevVersion = Version("1.0", buildString: "19", installDate: Date())
+                    let curVersion = Version("1.0", buildString: "19", installDate: Date())
+                    expect(Version.changeStateForFromVersion(prevVersion, toVersion: curVersion)).to(equal(Version.ChangeState.notChanged))
                 }
                 it("detects updates") {
-                    let prevVersion = Version("1.0", buildString: "19", installDate: NSDate())
-                    let curVersion = Version("1.0", buildString: "20", installDate: NSDate())
-                    expect(Version.changeStateForFromVersion(prevVersion, toVersion: curVersion)).to(equal(Version.ChangeState.Update(previousVersion: prevVersion)))
+                    let prevVersion = Version("1.0", buildString: "19", installDate: Date())
+                    let curVersion = Version("1.0", buildString: "20", installDate: Date())
+                    expect(Version.changeStateForFromVersion(prevVersion, toVersion: curVersion)).to(equal(Version.ChangeState.update(previousVersion: prevVersion)))
                 }
                 it("detects upgrades") {
-                    let prevVersion = Version("1.0", buildString: "19", installDate: NSDate())
-                    let curVersion = Version("1.1", buildString: "20", installDate: NSDate())
-                    expect(Version.changeStateForFromVersion(prevVersion, toVersion: curVersion)).to(equal(Version.ChangeState.Upgraded(previousVersion: prevVersion)))
+                    let prevVersion = Version("1.0", buildString: "19", installDate: Date())
+                    let curVersion = Version("1.1", buildString: "20", installDate: Date())
+                    expect(Version.changeStateForFromVersion(prevVersion, toVersion: curVersion)).to(equal(Version.ChangeState.upgraded(previousVersion: prevVersion)))
                 }
                 it("detects downgrades") {
-                    let prevVersion = Version("1.1", buildString: "19", installDate: NSDate())
-                    let curVersion = Version("1.0", buildString: "19", installDate: NSDate())
-                    expect(Version.changeStateForFromVersion(prevVersion, toVersion: curVersion)).to(equal(Version.ChangeState.Downgraded(previousVersion: prevVersion)))
+                    let prevVersion = Version("1.1", buildString: "19", installDate: Date())
+                    let curVersion = Version("1.0", buildString: "19", installDate: Date())
+                    expect(Version.changeStateForFromVersion(prevVersion, toVersion: curVersion)).to(equal(Version.ChangeState.downgraded(previousVersion: prevVersion)))
                 }
             }
             

@@ -23,7 +23,7 @@
 
 import Foundation
 
-public class VersionsTracker {
+open class VersionsTracker {
     
     internal static let appVersionScope = "appVersion";
     internal static let osVersionScope = "osVersion";
@@ -32,7 +32,7 @@ public class VersionsTracker {
     /**
      Shared instance, for those who prefer using `VersionsTracker` as a singleton.
      */
-    public static var sharedInstance : VersionsTracker {
+    open static var sharedInstance : VersionsTracker {
         get {
             if _sharedInstance == nil {
                 fatalError("❗️VersionsTracker.initialize() musted be called befor accessing the singleton")
@@ -56,7 +56,7 @@ public class VersionsTracker {
     /**
      The user defaults to store the version history in.
      */
-    private let userDefaults: NSUserDefaults
+    private let userDefaults: UserDefaults
     
     
     
@@ -68,7 +68,7 @@ public class VersionsTracker {
      - parameter userDefaults: Pass in a NSUserDefaults object for storing and retrieving the version history. Defaults to `NSUserDefaults.standardUserDefaults()`.
      
      */
-    public static func initialize(trackAppVersion trackAppVersion: Bool, trackOSVersion: Bool, withUserDefaults userDefaults: NSUserDefaults? = nil) {
+    public static func initialize(trackAppVersion: Bool, trackOSVersion: Bool, withUserDefaults userDefaults: UserDefaults? = nil) {
         if _sharedInstance != nil {
             fatalError("❗️VersionsTracker.initialize() was already called before and must be called only once.")
         }
@@ -87,8 +87,8 @@ public class VersionsTracker {
      
      - parameter userDefaults: Pass in a NSUserDefaults object for storing and retrieving the version history. Defaults to `NSUserDefaults.standardUserDefaults()`.
      */
-    public static func updateVersionHistories(trackAppVersion trackAppVersion: Bool, trackOSVersion: Bool, withUserDefaults userDefaults: NSUserDefaults? = nil) {
-        let defaults = userDefaults ?? NSUserDefaults.standardUserDefaults()
+    public static func updateVersionHistories(trackAppVersion: Bool, trackOSVersion: Bool, withUserDefaults userDefaults: UserDefaults? = nil) {
+        let defaults = userDefaults ?? UserDefaults.standard
         if trackAppVersion {
             let versionInfo = VersionTracker.updateVersionHistoryOnce(
                 withVersion: Version.currentAppVersion,
@@ -109,8 +109,8 @@ public class VersionsTracker {
         }
     }
     
-    public init(trackAppVersion: Bool = false, trackOSVersion: Bool = false, withUserDefaults userDefaults: NSUserDefaults? = nil) {
-        self.userDefaults = userDefaults ?? NSUserDefaults.standardUserDefaults()
+    public init(trackAppVersion: Bool = false, trackOSVersion: Bool = false, withUserDefaults userDefaults: UserDefaults? = nil) {
+        self.userDefaults = userDefaults ?? UserDefaults.standard
         
         if (trackAppVersion) {
             // triggre version histroy update

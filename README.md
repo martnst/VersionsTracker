@@ -87,23 +87,23 @@ print("The very first time the app was launched on iOS \(firstOSVerion.versionSt
 let versionsTracker = iDontMindSingletons ? VersionsTracker.sharedInstance : VersionsTracker()
 
 switch versionsTracker.appVersion.changeState {
-case .Installed:
+case .installed:
     // 🎉 Sweet, a new user just installed your app
     // ... start tutorial / intro
 
-case NotChanged:
+case .notChanged:
     // 😴 nothing as changed
     // ... nothing to do
 
-case Update(let previousVersion: Version):
+case .update(let previousVersion: Version):
     // 🙃 new build of the same version
     // ... hopefully it fixed those bugs the QA guy reported
 
-case Upgraded(let previousVersion: Version)
+case .upgraded(let previousVersion: Version)
     // 😄 marketing version increased
     // ... migrate old app data
 
-case Downgraded(let previousVersion: Version)
+case .downgraded(let previousVersion: Version)
     // 😵 marketing version decreased (hopefully we are not on production)
     // ... purge app data and start over
 

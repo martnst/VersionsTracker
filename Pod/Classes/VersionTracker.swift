@@ -23,7 +23,7 @@
 
 import Foundation
 
-public class VersionTracker {
+open class VersionTracker {
     
     /**
      Sorted array of all versions which the user has had installed. New versions are appended at the end of the array. The last element is the current version.
@@ -67,7 +67,7 @@ public class VersionTracker {
     /**
      The user defaults to store the version history in.
      */
-    private let userDefaults: NSUserDefaults
+    private let userDefaults: UserDefaults
     
     /**
      A string to build keys for storing version history of a particular verion to track.
@@ -83,8 +83,8 @@ public class VersionTracker {
      - parameter userDefaults: Pass in a NSUserDefaults object for storing and retrieving the version history. Defaults to `NSUserDefaults.standardUserDefaults()`.
      - parameter scope: A string to build keys for storing version history of a particular verion to track.
      */
-    public init(currentVersion: Version, inScope scope: String, userDefaults: NSUserDefaults? = nil) {
-        self.userDefaults = userDefaults ?? NSUserDefaults.standardUserDefaults()
+    public init(currentVersion: Version, inScope scope: String, userDefaults: UserDefaults? = nil) {
+        self.userDefaults = userDefaults ?? UserDefaults.standard
         self.userDefaultsScope = scope
         // when initialize the first instance or the singleton instance, everything loaded in order to update the version history can be used
         if let stuff = VersionTracker.updateVersionHistoryOnce(
@@ -107,60 +107,64 @@ public class VersionTracker {
     }
     
     
-    private struct OnceTokens {
-        static var appToken: dispatch_once_t = 0
-        static var osToken: dispatch_once_t = 0
+    fileprivate struct DidUpdateOnceTracking {
+        fileprivate static var appVersion: Bool = false
+        static var osVersion: Bool = false
     }
     
     /**
      Updates the version history once per session. To do so it loads the version history and creates a new version. This objects will be returned in a tuple.
      However, if it was already called befor it will return `nil` as the version history gets updates only once per app session.
      */
-    internal static func updateVersionHistoryOnce(withVersion newVersion: Version, inScope userDefaultsScope: String, onUserDefaults userDefaults: NSUserDefaults) -> (installedVersions: [Version], previousVersion: Version?, currentVerstion: Version)?   {
-        
+    internal static func updateVersionHistoryOnce(withVersion newVersion: Version, inScope userDefaultsScope: String, onUserDefaults userDefaults: UserDefaults) -> (installedVersions: [Version], previousVersion: Version?, currentVerstion: Version)?   {
+
         var result : (installedVersions: [Version], previousVersion: Version?, currentVerstion: Version)?
-        
-        let updateBlock:(Void)->Void = { () -> Void in
-            var installedVersions = userDefaults.versionsInScope(userDefaultsScope)
-            
-            let currentVersion : Version
-            if let knownCurrentVersion = installedVersions.filter({$0 == newVersion}).first {
-                currentVersion = knownCurrentVersion
-            } else {
-                newVersion.installDate = NSDate()
-                installedVersions.append(newVersion)
-                userDefaults.setVersions(installedVersions, inScope: userDefaultsScope)
-                currentVersion = newVersion
-            }
-            
-            userDefaults.setLastLaunchedVersion(currentVersion, inScope: userDefaultsScope)
-            
-            result = (installedVersions: installedVersions,
-                previousVersion: userDefaults.previousVersionForKey(userDefaultsScope),
-                currentVerstion: currentVersion)
-        }
-        
+
         // FIXME: find a better solution, e.g. storing a map of dispatch_once_t by scopes
         if userDefaultsScope == VersionsTracker.appVersionScope {
-            dispatch_once(&OnceTokens.appToken, updateBlock)
+            if !DidUpdateOnceTracking.appVersion {
+                result = updateVersionHistory(withVersion: newVersion, inScope: userDefaultsScope, onUserDefaults: userDefaults)
+                DidUpdateOnceTracking.appVersion = true
+            }
         }
         else if userDefaultsScope == VersionsTracker.osVersionScope {
-            dispatch_once(&OnceTokens.osToken, updateBlock)
+            if !DidUpdateOnceTracking.osVersion {
+                result = updateVersionHistory(withVersion: newVersion, inScope: userDefaultsScope, onUserDefaults: userDefaults)
+                DidUpdateOnceTracking.appVersion = true
+            }
         }
         else {
             fatalError("unsupported version scope '\(userDefaultsScope)'")
         }
-        
+
         return result
     }
     
-    
+    private static func updateVersionHistory(withVersion newVersion: Version, inScope userDefaultsScope: String, onUserDefaults userDefaults: UserDefaults) -> (installedVersions: [Version], previousVersion: Version?, currentVerstion: Version) {
+        var installedVersions = userDefaults.versionsInScope(userDefaultsScope)
+        
+        let currentVersion : Version
+        if let knownCurrentVersion = installedVersions.filter({$0 == newVersion}).first {
+            currentVersion = knownCurrentVersion
+        } else {
+            newVersion.installDate = Date()
+            installedVersions.append(newVersion)
+            userDefaults.setVersions(installedVersions, inScope: userDefaultsScope)
+            currentVersion = newVersion
+        }
+        
+        userDefaults.setLastLaunchedVersion(currentVersion, inScope: userDefaultsScope)
+        
+        return (installedVersions: installedVersions,
+                previousVersion: userDefaults.previousVersionForKey(userDefaultsScope),
+                currentVerstion: currentVersion)
+    }
     
 }
 
-private extension NSUserDefaults {
+private extension UserDefaults {
     
-    private static let prefiex = "VersionsTracker"
+    static let prefiex = "VersionsTracker"
     
     /**
      key for storing the last launched version in NSUserDefaults:
@@ -169,49 +173,49 @@ private extension NSUserDefaults {
      - holds the previous version before updateVersionHistoryOnce()
      - becomes the current version after updateVersionHistoryOnce()
      */
-    private static let lastLaunchedVersionKey = "lastLaunchedVersion"
+    static let lastLaunchedVersionKey = "lastLaunchedVersion"
     
     /**
      key for storing the antecessor version of the last launched version in NSUserDefaults
      - holds the version of the previous launch after updateVersionHistory()
      */
-    private static let previousLaunchedVersionKey = "previousLaunchedVersion"
+    static let previousLaunchedVersionKey = "previousLaunchedVersion"
     
     /*
     key for stroing the entire version history in NSUserDefaults
     */
-    private static let installedVersionsKey = "installedVersions"
+    static let installedVersionsKey = "installedVersions"
     
-    func versionsInScope(scope: String) -> [Version] {
-        let key = buildKeyForProperty(NSUserDefaults.installedVersionsKey, inScope: scope)
-        return (self.objectForKey(key) as? [NSDictionary])?.map { Version(dict: $0) } ?? []
+    func versionsInScope(_ scope: String) -> [Version] {
+        let key = buildKeyForProperty(UserDefaults.installedVersionsKey, inScope: scope)
+        return (self.object(forKey: key) as? [NSDictionary])?.map { Version(dict: $0) } ?? []
     }
     
-    func setVersions(versions: [Version], inScope scope: String) {
-        let key = buildKeyForProperty(NSUserDefaults.installedVersionsKey, inScope: scope)
-        self.setObject(versions.map{ $0.asDictionary }, forKey: key)
+    func setVersions(_ versions: [Version], inScope scope: String) {
+        let key = buildKeyForProperty(UserDefaults.installedVersionsKey, inScope: scope)
+        self.set(versions.map{ $0.asDictionary }, forKey: key)
     }
     
-    func previousVersionForKey(key: String) -> Version? {
-        return versionForKey(key, property: NSUserDefaults.previousLaunchedVersionKey)
+    func previousVersionForKey(_ key: String) -> Version? {
+        return versionForKey(key, property: UserDefaults.previousLaunchedVersionKey)
     }
     
-    func hasLastLaunchedVersionSetInScope(scope: String) -> Bool {
-        let key = buildKeyForProperty(NSUserDefaults.lastLaunchedVersionKey, inScope: scope)
-        return self.dictionaryForKey(key) != nil
+    func hasLastLaunchedVersionSetInScope(_ scope: String) -> Bool {
+        let key = buildKeyForProperty(UserDefaults.lastLaunchedVersionKey, inScope: scope)
+        return self.dictionary(forKey: key) != nil
     }
     
-    func lastLaunchedVersionForkey(key: String) -> Version? {
-        return self.versionForKey(key, property: NSUserDefaults.lastLaunchedVersionKey)
+    func lastLaunchedVersionForkey(_ key: String) -> Version? {
+        return self.versionForKey(key, property: UserDefaults.lastLaunchedVersionKey)
     }
     
-    private func versionForKey(key: String, property: String) -> Version? {
-        let versionDict = self.dictionaryForKey(buildKeyForProperty(property, inScope: key))
-        return Version.versionFromDictionary(versionDict)
+    func versionForKey(_ key: String, property: String) -> Version? {
+        let versionDict = self.dictionary(forKey: buildKeyForProperty(property, inScope: key))
+        return Version.versionFromDictionary(versionDict as NSDictionary?)
     }
     
-    private func buildKeyForProperty(property: String, inScope scope: String) -> String {
-        return [NSUserDefaults.prefiex, scope, property].joinWithSeparator(".")
+    func buildKeyForProperty(_ property: String, inScope scope: String) -> String {
+        return [UserDefaults.prefiex, scope, property].joined(separator: ".")
     }
     
     /**
@@ -222,12 +226,12 @@ private extension NSUserDefaults {
      It will move the current stored last launched version to the previous launched version slot.
      This allow retrieving the previous version at any time during the session.
      */
-    func setLastLaunchedVersion(version: Version, inScope scope: String) {
-        let lastLaunchedKey = buildKeyForProperty(NSUserDefaults.lastLaunchedVersionKey, inScope: scope)
-        let prevLaunchedKey = buildKeyForProperty(NSUserDefaults.previousLaunchedVersionKey, inScope: scope)
-        let lastLaunchedDictionary = self.dictionaryForKey(lastLaunchedKey)
-        self.setObject(lastLaunchedDictionary, forKey: prevLaunchedKey)  // move the last version to the previous slot
-        self.setObject(version.asDictionary, forKey: lastLaunchedKey) // update last version with the current
+    func setLastLaunchedVersion(_ version: Version, inScope scope: String) {
+        let lastLaunchedKey = buildKeyForProperty(UserDefaults.lastLaunchedVersionKey, inScope: scope)
+        let prevLaunchedKey = buildKeyForProperty(UserDefaults.previousLaunchedVersionKey, inScope: scope)
+        let lastLaunchedDictionary = self.dictionary(forKey: lastLaunchedKey)
+        self.set(lastLaunchedDictionary, forKey: prevLaunchedKey)  // move the last version to the previous slot
+        self.set(version.asDictionary, forKey: lastLaunchedKey) // update last version with the current
     }
 }
 
@@ -241,17 +245,17 @@ internal extension VersionTracker {
     
     internal static func resetUpdateVersionHistoryOnceToken() {
         guard NSClassFromString("XCTest") != nil else { fatalError("this method shall only be called in unit tests") }
-        OnceTokens.appToken = 0
-        OnceTokens.osToken = 0
+        DidUpdateOnceTracking.appVersion = false
+        DidUpdateOnceTracking.osVersion = false
     }
 }
 
-internal extension NSUserDefaults {
+internal extension UserDefaults {
     
-    internal func resetInScope(scope: String) {
-        self.removeObjectForKey(buildKeyForProperty(NSUserDefaults.previousLaunchedVersionKey, inScope: scope))
-        self.removeObjectForKey(buildKeyForProperty(NSUserDefaults.lastLaunchedVersionKey, inScope: scope))
-        self.removeObjectForKey(buildKeyForProperty(NSUserDefaults.installedVersionsKey, inScope: scope))
+    internal func resetInScope(_ scope: String) {
+        self.removeObject(forKey: buildKeyForProperty(UserDefaults.previousLaunchedVersionKey, inScope: scope))
+        self.removeObject(forKey: buildKeyForProperty(UserDefaults.lastLaunchedVersionKey, inScope: scope))
+        self.removeObject(forKey: buildKeyForProperty(UserDefaults.installedVersionsKey, inScope: scope))
     }
     
 }

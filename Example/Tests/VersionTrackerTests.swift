@@ -30,10 +30,10 @@ import Nimble
 
 class VersionTrackerTests: QuickSpec {
     override func spec() {
-        describe("AppVersionTracker") {
+        describe("VersionTracker") {
             context("used with custom NSUserDefaults") {
                 let scope = "appVersion"
-                let userDefaults = NSUserDefaults(suiteName: "AppVersionTrackerTests")!
+                let userDefaults = UserDefaults(suiteName: "AppVersionTrackerTests")!
                 userDefaults.resetInScope(scope)
                 
                 let versions = [
@@ -49,27 +49,34 @@ class VersionTrackerTests: QuickSpec {
                 
                 it("detects the very first app launch as Installed state") {
                     let versionTracker = VersionTracker(currentVersion: versions[0], inScope: scope, userDefaults: userDefaults)
-                    expect(versionTracker.changeState).to(equal(Version.ChangeState.Installed));
+                    expect(versionTracker.changeState).to(equal(Version.ChangeState.installed));
                 }
                 
                 it("it will notice NotChanged for the second launch") {
                     let versionTracker = VersionTracker(currentVersion: versions[0], inScope: scope, userDefaults: userDefaults)
-                    expect(versionTracker.changeState).to(equal(Version.ChangeState.NotChanged));
+                    expect(versionTracker.changeState).to(equal(Version.ChangeState.notChanged));
                 }
                 
                 it("it will notice build Updates") {
                     let versionTracker = VersionTracker(currentVersion: versions[1], inScope: scope, userDefaults: userDefaults)
-                    expect(versionTracker.changeState).to(equal(Version.ChangeState.Update(previousVersion: Version("1.0", buildString: "1"))));
+                    expect(versionTracker.changeState).to(equal(Version.ChangeState.update(previousVersion: Version("1.0", buildString: "1"))));
                 }
                 
                 it("it will notice markting version upgrades") {
                     let versionTracker = VersionTracker(currentVersion: versions[2], inScope: scope, userDefaults: userDefaults)
-                    expect(versionTracker.changeState).to(equal(Version.ChangeState.Upgraded(previousVersion: Version("1.0", buildString: "2"))));
+                    expect(versionTracker.changeState).to(equal(Version.ChangeState.upgraded(previousVersion: Version("1.0", buildString: "2"))));
                 }
                 
                 it("it will notice version downgrades") {
                     let versionTracker = VersionTracker(currentVersion: versions[3], inScope: scope, userDefaults: userDefaults)
-                    expect(versionTracker.changeState).to(equal(Version.ChangeState.Downgraded(previousVersion: Version("1.1", buildString: "3"))));
+                    expect(versionTracker.changeState).to(equal(Version.ChangeState.downgraded(previousVersion: Version("1.1", buildString: "3"))));
+                }
+                
+                it("update version history only once") {
+                    let result1 = VersionTracker.updateVersionHistoryOnce(withVersion: versions[0], inScope: scope, onUserDefaults: userDefaults)
+                    let result2 = VersionTracker.updateVersionHistoryOnce(withVersion: versions[0], inScope: scope, onUserDefaults: userDefaults)
+                    expect(result1).toNot(beNil())
+                    expect(result2).to(beNil()) // nil indicated the history was already updated
                 }
                 
             }
