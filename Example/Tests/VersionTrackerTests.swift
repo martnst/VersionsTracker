@@ -59,7 +59,7 @@ class VersionTrackerTests: QuickSpec {
                 
                 it("it will notice build Updates") {
                     let versionTracker = VersionTracker(currentVersion: versions[1], inScope: scope, userDefaults: userDefaults)
-                    expect(versionTracker.changeState).to(equal(Version.ChangeState.update(previousVersion: Version("1.0", buildString: "1"))));
+                    expect(versionTracker.changeState).to(equal(Version.ChangeState.updated(previousVersion: Version("1.0", buildString: "1"))));
                 }
                 
                 it("it will notice markting version upgrades") {

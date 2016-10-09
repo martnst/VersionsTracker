@@ -162,7 +162,7 @@ extension Version {
     public enum ChangeState {
         case installed
         case notChanged
-        case update(previousVersion: Version)
+        case updated(previousVersion: Version)
         case upgraded(previousVersion: Version)
         case downgraded(previousVersion: Version)
     }
@@ -182,7 +182,7 @@ extension Version {
             return .downgraded(previousVersion: olderVersion)
         }
         else if olderVersion != newerVersion {
-            return .update(previousVersion: olderVersion)
+            return .updated(previousVersion: olderVersion)
         }
         return .notChanged
     }
@@ -199,7 +199,7 @@ public func ==(lhs: Version.ChangeState, rhs: Version.ChangeState) -> Bool {
         return true
     case (.notChanged, .notChanged):
         return true
-    case (let .update(previousVersionLHS), let .update(previousVersionRHS)):
+    case (let .updated(previousVersionLHS), let .updated(previousVersionRHS)):
         return previousVersionLHS == previousVersionRHS
     case (let .upgraded(previousVersionLHS), let .upgraded(previousVersionRHS)):
         return previousVersionLHS == previousVersionRHS

@@ -88,22 +88,27 @@ let versionsTracker = iDontMindSingletons ? VersionsTracker.sharedInstance : Ver
 
 switch versionsTracker.appVersion.changeState {
 case .installed:
+    break
     // 🎉 Sweet, a new user just installed your app
     // ... start tutorial / intro
 
 case .notChanged:
+    break
     // 😴 nothing as changed
     // ... nothing to do
 
-case .update(let previousVersion: Version):
+case .updated(let previousVersion: Version):
+    break
     // 🙃 new build of the same version
     // ... hopefully it fixed those bugs the QA guy reported
 
 case .upgraded(let previousVersion: Version)
+    break
     // 😄 marketing version increased
     // ... migrate old app data
 
 case .downgraded(let previousVersion: Version)
+    break
     // 😵 marketing version decreased (hopefully we are not on production)
     // ... purge app data and start over
 
