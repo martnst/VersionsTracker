@@ -199,7 +199,7 @@ class VersionTests: QuickSpec {
                 it("detects updates") {
                     let prevVersion = Version("1.0", buildString: "19", installDate: Date())
                     let curVersion = Version("1.0", buildString: "20", installDate: Date())
-                    expect(Version.changeStateForFromVersion(prevVersion, toVersion: curVersion)).to(equal(Version.ChangeState.update(previousVersion: prevVersion)))
+                    expect(Version.changeStateForFromVersion(prevVersion, toVersion: curVersion)).to(equal(Version.ChangeState.updated(previousVersion: prevVersion)))
                 }
                 it("detects upgrades") {
                     let prevVersion = Version("1.0", buildString: "19", installDate: Date())

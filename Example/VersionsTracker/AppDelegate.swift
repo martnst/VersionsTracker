@@ -103,7 +103,7 @@ func printVersionChange(_ versionTracker: VersionTracker) {
         print("🆕 Congratulations, the app is launched for the very first time")
     case .notChanged:
         print("🔄 Welcome back, nothing as changed since the last time")
-    case .update(let previousVersion):
+    case .updated(let previousVersion):
         print("🆙 The app was updated making small changes: \(previousVersion) -> \(versionTracker.currentVersion)")
     case .upgraded(let previousVersion):
         print("⬆️ Cool, its a new version: \(previousVersion) -> \(versionTracker.currentVersion)")
