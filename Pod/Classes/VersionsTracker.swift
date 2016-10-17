@@ -113,13 +113,13 @@ open class VersionsTracker {
         self.userDefaults = userDefaults ?? UserDefaults.standard
         
         if (trackAppVersion) {
-            // triggre version histroy update
-            self.appVersion.currentVersion
+            // trigger version histroy update
+            _ = self.appVersion.currentVersion
         }
         
         if (trackOSVersion) {
-            // triggre version histroy update
-            self.osVersion.currentVersion
+            // trigger version histroy update
+            _ = self.osVersion.currentVersion
         }
     }
     
