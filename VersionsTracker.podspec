@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = "VersionsTracker"
-  s.version          = "0.2.0"
+  s.version          = "0.2.1"
   s.summary          = "Keeping track of version installation history made easy."
   s.description      = <<-DESC
                        VersionsTracker is a Swift Library, which tracks install version history of app and os version.
