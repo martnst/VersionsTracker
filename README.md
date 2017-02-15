@@ -45,7 +45,7 @@ pod "VersionsTracker"
 [Carthage](https://github.com/Carthage/Carthage) is a decentralized dependency manager that builds your dependencies and provides you with binary frameworks. Add the following line to your `Cartfile`:
 
 ```ogdl
-github 'martnst/VersionsTracker'
+github "martnst/VersionsTracker"
 ```
 
 ## Usage
