@@ -16,7 +16,7 @@
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "A06669F71E4C856F00B922DC"
                BuildableName = "VersionsTracker.framework"
-               BlueprintName = "VersionsTracker"
+               BlueprintName = "VersionsTracker iOS"
                ReferencedContainer = "container:VersionsTracker.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -28,7 +28,26 @@
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       shouldUseLaunchSchemeArgsEnv = "YES">
       <Testables>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "5BEB407C1E53CACE0079FDC3"
+               BuildableName = "VersionsTracker iOS Tests.xctest"
+               BlueprintName = "VersionsTracker iOS Tests"
+               ReferencedContainer = "container:VersionsTracker.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
+      <MacroExpansion>
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "A06669F71E4C856F00B922DC"
+            BuildableName = "VersionsTracker.framework"
+            BlueprintName = "VersionsTracker iOS"
+            ReferencedContainer = "container:VersionsTracker.xcodeproj">
+         </BuildableReference>
+      </MacroExpansion>
       <AdditionalOptions>
       </AdditionalOptions>
    </TestAction>
@@ -47,7 +66,7 @@
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "A06669F71E4C856F00B922DC"
             BuildableName = "VersionsTracker.framework"
-            BlueprintName = "VersionsTracker"
+            BlueprintName = "VersionsTracker iOS"
             ReferencedContainer = "container:VersionsTracker.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
@@ -65,7 +84,7 @@
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "A06669F71E4C856F00B922DC"
             BuildableName = "VersionsTracker.framework"
-            BlueprintName = "VersionsTracker"
+            BlueprintName = "VersionsTracker iOS"
             ReferencedContainer = "container:VersionsTracker.xcodeproj">
          </BuildableReference>
       </MacroExpansion>

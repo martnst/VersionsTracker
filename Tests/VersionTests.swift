@@ -32,13 +32,18 @@ class VersionTests: QuickSpec {
     override func spec() {
         describe("Version") {
             
-            describe("currentVersion") {
-                let infoDict = Bundle.main.infoDictionary!
-                it("versionString is set to CFBundleShortVersionString from info.plist") {
-                    expect(Version.currentAppVersion.versionString).to(equal(infoDict["CFBundleShortVersionString"] as? String))
-                }
-                it("buildString is set to kCFBundleVersionKey from info.plist") {
-                    expect(Version.currentAppVersion.buildString).to(equal(infoDict[kCFBundleVersionKey as String] as? String))
+            if Bundle.main.bundleIdentifier == nil {
+                print("⚠️ Skipping currentAppVersion tests -> set Host Application for test target to `Example App`")
+            }
+            else {
+                describe("currentAppVersion") {
+                    let infoDict = Bundle.main.infoDictionary!
+                    it("versionString is set to CFBundleShortVersionString from info.plist") {
+                        expect(Version.currentAppVersion.versionString).to(equal(infoDict["CFBundleShortVersionString"] as? String))
+                    }
+                    it("buildString is set to kCFBundleVersionKey from info.plist") {
+                        expect(Version.currentAppVersion.buildString).to(equal(infoDict[kCFBundleVersionKey as String] as? String))
+                    }
                 }
             }
             
