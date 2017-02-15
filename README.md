@@ -31,14 +31,22 @@ To run the example project, clone the repo, and run `pod install` from the Examp
 
 ## Installation
 
+### CocoaPods
+
 VersionsTracker is available through [CocoaPods](http://cocoapods.org). To install
-it, simply add the following line to your Podfile:
+it, simply add the following line to your `Podfile`:
 
 ```ruby
 pod "VersionsTracker"
 ```
 
+### Carthage
 
+[Carthage](https://github.com/Carthage/Carthage) is a decentralized dependency manager that builds your dependencies and provides you with binary frameworks. Add the following line to your `Cartfile`:
+
+```ogdl
+github 'martnst/VersionsTracker'
+```
 
 ## Usage
 
