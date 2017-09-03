@@ -79,7 +79,7 @@ open class Version: ExpressibleByStringLiteral, Comparable {
         systemVersionStringScanner.scanUpTo("(Build", into: nil)
         systemVersionStringScanner.scanUpTo(" ", into: nil)
         systemVersionStringScanner.scanUpTo(")", into: &build)
-        return Version(systemVersionString, buildString: build as? String)
+        return Version(systemVersionString, buildString: build as String?)
     }
     
     public let versionString: String
