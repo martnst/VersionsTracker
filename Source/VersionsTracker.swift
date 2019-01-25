@@ -32,7 +32,7 @@ open class VersionsTracker {
     /**
      Shared instance, for those who prefer using `VersionsTracker` as a singleton.
      */
-    open static var sharedInstance : VersionsTracker {
+    public static var sharedInstance : VersionsTracker {
         get {
             if _sharedInstance == nil {
                 fatalError("❗️VersionsTracker.initialize() musted be called befor accessing the singleton")

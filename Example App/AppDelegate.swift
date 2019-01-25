@@ -33,7 +33,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
 
 
-    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
         
         guard NSClassFromString("XCTest") == nil else {
@@ -89,7 +89,7 @@ func printVersionInfo(_ versionTracker: VersionTracker, headline: String) {
     print("")
     print("")
     print(headline)
-    print([String](repeating: "-", count: headline.characters.count).joined(separator: ""))
+    print([String](repeating: "-", count: headline.count).joined(separator: ""))
     print("")
     printVersionChange(versionTracker)
     print("⌚️Current version is from \(versionTracker.currentVersion.installDate)")
